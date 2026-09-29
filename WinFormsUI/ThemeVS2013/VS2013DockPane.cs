@@ -34,6 +34,10 @@ namespace WeifenLuo.WinFormsUI.ThemeVS2013
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            //A paint can still arrive for a pane that has just left its dock panel (its contents closing): nothing to draw
+            //(OpenCAGE crash report 279, reproduced by the viewport stress run while flowgraph tabs closed)
+            if (DockPanel?.Theme == null)
+                return;
             var color = DockPanel.Theme.ColorPalette.ToolWindowBorder;
             e.Graphics.FillRectangle(DockPanel.Theme.PaintingService.GetBrush(color), e.ClipRectangle);
         }

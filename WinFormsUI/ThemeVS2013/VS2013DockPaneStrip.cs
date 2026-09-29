@@ -565,6 +565,10 @@ namespace WeifenLuo.WinFormsUI.ThemeVS2013
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            //As VS2013DockPane.OnPaint: a paint can still arrive for a pane that has just left its dock panel (its tabs
+            //closing), and the strip's own drawing reads the panel's theme (NRE in DrawTabStrip, viewport stress run)
+            if (DockPane?.DockPanel?.Theme == null)
+                return;
             CalculateTabs();
             if (Appearance == DockPane.AppearanceStyle.Document && DockPane.ActiveContent != null)
             {

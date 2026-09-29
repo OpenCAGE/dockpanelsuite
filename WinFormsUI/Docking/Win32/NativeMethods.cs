@@ -47,6 +47,9 @@ namespace WeifenLuo.WinFormsUI.Docking
         [DllImport("Kernel32.dll", CharSet = CharSet.Auto)]
         public static extern int GetCurrentThreadId();
 
+        [DllImport("user32.dll")]
+        public static extern int GetWindowThreadProcessId(IntPtr hWnd, IntPtr lpdwProcessId);
+
         public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]

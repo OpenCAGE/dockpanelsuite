@@ -201,6 +201,9 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             if (ClientRectangle.Width == 0 || ClientRectangle.Height == 0)
                 return;
+            //A pane that has just left its dock panel can still be painted (see VS2013DockPane.OnPaint)
+            if (DockPane?.DockPanel?.Theme == null)
+                return;
 
             Rectangle rect = ClientRectangle;
             var border = DockPane.DockPanel.Theme.ColorPalette.ToolWindowBorder;

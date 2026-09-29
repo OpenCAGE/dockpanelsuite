@@ -29,15 +29,45 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         protected ToolStripRenderer ToolStripRenderer { get; set;}
 
-        private Dictionary<ToolStrip, KeyValuePair<ToolStripRenderMode, ToolStripRenderer>> _stripBefore
-            = new Dictionary<ToolStrip, KeyValuePair<ToolStripRenderMode, ToolStripRenderer>>();
+        /* What each themed strip looked like before, for CleanUp to put back. Held weakly: every docked content's
+           context and tab menus are themed as it is shown, and nothing took them out again, so each menu a closed
+           content ever had - and, through its items' handlers, the content and everything it referenced - lived as
+           long as the theme (OpenCAGE: 406 closed flowgraph pages and the previous level's scripts after one switch). */
+        private sealed class StripBefore
+        {
+            public WeakReference Strip;
+            public KeyValuePair<ToolStripRenderMode, ToolStripRenderer> Before;
+        }
+
+        private readonly List<StripBefore> _stripBefore = new List<StripBefore>();
+
+        private void RememberStrip(ToolStrip toolStrip)
+        {
+            KeyValuePair<ToolStripRenderMode, ToolStripRenderer> before =
+                new KeyValuePair<ToolStripRenderMode, ToolStripRenderer>(toolStrip.RenderMode, toolStrip.Renderer);
+            for (int i = _stripBefore.Count - 1; i >= 0; i--)
+            {
+                ToolStrip strip = _stripBefore[i].Strip.Target as ToolStrip;
+                if (strip == null || strip.IsDisposed)
+                {
+                    _stripBefore.RemoveAt(i);
+                    continue;
+                }
+                if (strip == toolStrip)
+                {
+                    _stripBefore[i].Before = before;
+                    return;
+                }
+            }
+            _stripBefore.Add(new StripBefore { Strip = new WeakReference(toolStrip), Before = before });
+        }
 
         public void ApplyTo(ToolStrip toolStrip)
         {
             if (toolStrip == null)
                 return;
 
-            _stripBefore[toolStrip] = new KeyValuePair<ToolStripRenderMode, ToolStripRenderer>(toolStrip.RenderMode, toolStrip.Renderer);
+            RememberStrip(toolStrip);
             if(ToolStripRenderer != null)
                 toolStrip.Renderer = ToolStripRenderer;
 
@@ -137,8 +167,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             foreach (var item in _stripBefore)
             {
-                var strip = item.Key;
-                var cache = item.Value;
+                var strip = item.Strip.Target as ToolStrip;
+                if (strip == null || strip.IsDisposed)
+                    continue;
+                var cache = item.Before;
                 if (cache.Key == ToolStripRenderMode.Custom)
                 {
                     if (cache.Value != null)

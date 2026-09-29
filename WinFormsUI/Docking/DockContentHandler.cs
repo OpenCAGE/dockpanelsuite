@@ -847,6 +847,12 @@ namespace WeifenLuo.WinFormsUI.Docking
                 Form.Visible = visible;
         }
 
+        private static bool FocusIsInAnotherThreadsWindow()
+        {
+            IntPtr focus = NativeMethods.GetFocus();
+            return focus != IntPtr.Zero && NativeMethods.GetWindowThreadProcessId(focus, IntPtr.Zero) != NativeMethods.GetCurrentThreadId();
+        }
+
         private void SetParent(Control value)
         {
             if (Form.Parent == value)
@@ -858,7 +864,8 @@ namespace WeifenLuo.WinFormsUI.Docking
             // MDI child form get activated. 
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             bool bRestoreFocus = false;
-            if (Form.ContainsFocus)
+            bool hadFocus = Form.ContainsFocus;
+            if (hadFocus)
             {
                 // Suggested as a fix for a memory leak by bugreports
                 if (value == null && !IsFloat)
@@ -878,7 +885,10 @@ namespace WeifenLuo.WinFormsUI.Docking
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             var parentChanged = value != Form.Parent;
             Form.Parent = value;
-            if (PatchController.EnableMainWindowFocusLostFix == true && parentChanged)
+            //Not when the focus is in a window another thread owns (OpenCAGE's embedded viewer) and the content did not have
+            //it: focusing the content took it from there, and moving it out of that window waits on that thread
+            if (PatchController.EnableMainWindowFocusLostFix == true && parentChanged
+                && (hadFocus || Win32Helper.IsRunningOnMono || !FocusIsInAnotherThreadsWindow()))
             {
                 Form.Focus();
             }
@@ -916,6 +926,16 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         public void Show(DockPanel dockPanel, DockState dockState)
+        {
+            Show(dockPanel, dockState, true);
+        }
+
+        /// <summary>
+        /// As <see cref="Show(DockPanel, DockState)"/>; with <paramref name="activate"/> false the content is shown and made
+        /// its pane's selected content, but the keyboard focus is left where it is. Activating moves the focus, and moving it
+        /// out of a window another thread owns (an embedded process's window) waits on that thread.
+        /// </summary>
+        public void Show(DockPanel dockPanel, DockState dockState, bool activate)
         {
             if (dockPanel == null)
                 throw (new ArgumentNullException(Strings.DockContentHandler_Show_NullDockPanel));
@@ -956,7 +976,14 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             DockState = dockState;
             dockPanel.ResumeLayout(true, true); //we'll resume the layout before activating to ensure that the position
-            Activate();                         //and size of the form are finally processed before the form is shown
+            if (activate)                       //and size of the form are finally processed before the form is shown
+                Activate();
+            else
+            {
+                IsHidden = false;
+                if (Pane != null && Pane.DisplayingContents.Contains(Content))
+                    Pane.ActiveContent = Content;
+            }
         }
 
         [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters")]
