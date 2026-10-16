@@ -26,6 +26,10 @@
     <Configurations>Debug;Release;Ship</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Ship|AnyCPU'">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="ThemeVS2012\ImageService.cs" />
     <Compile Include="ThemeVS2012\Resources.Designer.cs">

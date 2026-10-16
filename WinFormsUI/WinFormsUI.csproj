@@ -33,6 +33,10 @@
     <Configurations>Debug;Release;Ship</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Ship|AnyCPU'">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="Docking\Configuration\PatchSection.cs" />
     <Compile Include="Docking\DefaultTheme.cs" />
