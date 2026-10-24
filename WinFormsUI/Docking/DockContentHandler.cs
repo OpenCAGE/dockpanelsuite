@@ -898,7 +898,11 @@ namespace WeifenLuo.WinFormsUI.Docking
             // Change the parent of a control with focus may result in the first
             // MDI child form get activated. 
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if (bRestoreFocus && !Win32Helper.IsRunningOnMono)
+            //Not into a pane that doesn't show the content (yet): one still being built for it, while the content is
+            //hidden and its dock state change suspended, throws "ActiveContent must be one of the visible contents"
+            //from Activate's ActiveContent setter (OpenCAGE's level viewer panel, docked by a level load with the focus
+            //in the viewer). Show selects it in the pane, and activates it if asked, once the pane has it.
+            if (bRestoreFocus && !Win32Helper.IsRunningOnMono && (Pane == null || Pane.DisplayingContents.Contains(Content)))
                 Activate();
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
