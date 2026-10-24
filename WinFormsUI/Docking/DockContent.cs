@@ -200,9 +200,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// <summary>
         /// Context menu.
         /// </summary>
-        /// <remarks>
-        /// This property should be obsolete as it does not support theming. Please use <see cref="TabPageContextMenuStrip"/> instead.
-        /// </remarks>
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockContent_TabPageContextMenu_Description")]
         [DefaultValue(null)]
@@ -339,10 +336,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// <summary>
         /// Overridden to avoid resize issues with nested controls
         /// </summary>
-        /// <remarks>
-        /// http://blogs.msdn.com/b/alejacma/archive/2008/11/20/controls-won-t-get-resized-once-the-nesting-hierarchy-of-windows-exceeds-a-certain-depth-x64.aspx
-        /// http://support.microsoft.com/kb/953934
-        /// </remarks>
         protected override void OnSizeChanged(EventArgs e)
         {
             if (DockPanel != null && DockPanel.SupportDeeplyNestedContent && IsHandleCreated)

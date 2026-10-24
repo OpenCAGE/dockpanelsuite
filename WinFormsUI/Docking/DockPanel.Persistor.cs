@@ -798,9 +798,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// <param name="stream">The stream.</param>
         /// <param name="deserializeContent">Deserialization handler.</param>
         /// <exception cref="Exception">Deserialization might throw exceptions.</exception>
-        /// <remarks>
-        /// The stream is closed after deserialization.
-        /// </remarks>
         public void LoadFromXml(Stream stream, DeserializeDockContent deserializeContent)
         {
             Persistor.LoadFromXml(this, stream, deserializeContent, true);

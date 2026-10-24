@@ -21,11 +21,6 @@ namespace WeifenLuo.WinFormsUI.Docking
     /// </summary>
     /// <param name="persistString">Strings stored in layout file/stream.</param>
     /// <returns>Dock content deserialized from layout/stream.</returns>
-    /// <remarks>
-    /// The deserialization handler method should handle all possible exceptions.
-    /// 
-    /// If any exception happens during deserialization and is not handled, the program might crash or experience other issues.
-    /// </remarks>
     [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "0#")]
     public delegate IDockContent DeserializeDockContent(string persistString);
 
@@ -336,15 +331,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// <summary>
         /// Dock area.
         /// </summary>
-        /// <remarks>
-        /// This <see cref="Rectangle"/> is the center rectangle of <see cref="DockPanel"/> control.
-        /// 
-        /// Excluded spaces are for the following visual elements,
-        /// * Auto hide strips on four sides.
-        /// * Necessary paddings defined in themes.
-        /// 
-        /// Therefore, all dock contents mainly fall into this area (except auto hide window, which might slightly move beyond this area).
-        /// </remarks>
         public Rectangle DockArea
         {
             get
@@ -630,9 +616,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// <summary>
         /// Flag to show autohide content on mouse hover. Default value is <code>true</code>.
         /// </summary>
-        /// <remarks>
-        /// This flag is ignored in VS2012/2013 themes. Such themes assume it is always <code>false</code>.
-        /// </remarks>
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_ShowAutoHideContentOnHover_Description")]
         [DefaultValue(true)]

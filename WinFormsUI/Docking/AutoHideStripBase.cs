@@ -427,10 +427,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         /// </summary>
         /// <param name="dockState">Dock state.</param>
         /// <returns>The desired rectangle.</returns>
-        /// <remarks>
-        /// As the corners are represented by <see cref="RectangleTopLeft"/>, <see cref="RectangleTopRight"/>, <see cref="RectangleBottomLeft"/>, and <see cref="RectangleBottomRight"/>,
-        /// the four strips can be easily calculated out as the borders.
-        /// </remarks>
         protected internal Rectangle GetTabStripRectangle(DockState dockState)
         {
             if (dockState == DockState.DockTopAutoHide)
